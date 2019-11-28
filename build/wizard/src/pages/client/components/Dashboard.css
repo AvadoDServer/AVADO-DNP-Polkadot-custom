@@ -1,0 +1,10 @@
+.memberbox {
+    float: left;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.memberboxparent {
+    float: none;
+    /* height: 150px; */
+}

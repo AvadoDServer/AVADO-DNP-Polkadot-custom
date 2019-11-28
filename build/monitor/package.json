@@ -1,0 +1,27 @@
+{
+  "name": "dcloudmonitor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@polkadot/api": "^0.94.1",
+    "assert": "^2.0.0",
+    "axios": "^0.19.0",
+    "chokidar": "^3.0.2",
+    "express": "^4.17.1",
+    "nanorequest": "^3.0.0",
+    "node-random-name": "^1.0.1",
+    "request": "^2.88.0",
+    "restify": "^8.4.0",
+    "restify-cors-middleware": "^1.1.1",
+    "shelljs": "^0.8.3",
+    "simple-json-db": "^1.2.1",
+    "supervisord": "^0.1.0",
+    "zerotier-service": "^0.3.1"
+  }
+}

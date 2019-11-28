@@ -1,0 +1,95 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css?family=Baloo+Bhaijaan:400,700|Exo+2:400,700');
+
+
+// **********************************
+//  overwrites
+// **********************************
+
+
+// Core Variables
+$info: #413594
+$success: #20BC44
+$family-sans-serif: 'Exo 2', sans-serif
+
+$base-col: #2e4e72
+$accent-col-1: #c6dc94
+$accent-col-2: #54b276
+
+$input-background-color: transparent
+$input-color: white
+$input-focus-border-color: white
+$input-border-color: rgba(255,255,255,0.5)
+
+$footer-background-color: #253548
+
+$switch-background: rgba(255,255,255,0.1)
+
+$link-col: #aaaaaa
+$link-col-hover: #eeeeee
+
+
+@import '~bulma/bulma.sass'
+@import '~bulma-switch/src/sass/index.sass'
+
+
+$dottedlinecolor: rgba(0,0,0,0.3)   
+
+.switch[type="checkbox"].is-rounded + label::after
+    outline: 0
+
+.switch[type="checkbox"].is-link:checked + label::before
+    outline: 0
+
+.switch[type="checkbox"]:focus + label::before
+    outline: 0
+
+
+a
+    color: $link-col
+
+html
+  background-color: $base-col
+  font-family: 'Baloo Bhaijaan', cursive
+
+a:hover
+    color: $link-col-hover
+
+.subtitle
+    opacity: .7
+
+.setting
+    border-top: 1px dashed $dottedlinecolor
+    box-sizing:border-box
+    padding-top: 40px   
+    margin: 50px 0
+
+.help
+    margin-top: 10px
+    font-weight: bold
+
+
+.footer .content p
+    opacity: .25
+
+
+.buttons
+    margin-top: 10vh
+
+
+.set_setting
+    border-top: 1px dashed $dottedlinecolor
+    box-sizing:border-box
+    padding-top: 2vh
+    margin: 3vh 0
+
+.changebtn
+    margin-top: 4vh
+
+.switch_w_options
+    margin-top: 10px
+
+
+.spacer
+    height: 15px
+    width: 100%
