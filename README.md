@@ -4,6 +4,8 @@ Creates a virtual LAN over TCP/IP - allows you to cluster multiple instances tog
 
 Then bootstraps a Polkadot node in this LAN and allows you to start/join a chain.
 
+![Screenshot of the Polkadot Network config](/docs/screenshot.png?raw=true "Screenshot of the Polkadot Network config")
+
 This software is intended to run on the AVADO system. You can get an AVADO box here https://ava.do/shop
 
 ## Building
