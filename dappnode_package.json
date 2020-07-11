@@ -1,33 +1,28 @@
 {
   "name": "polkadotcustom.avado.dnp.dappnode.eth",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Polkadot Custom Network - Set up a custom Polkadot 2, 3 or more node consensus network easy using the integrated wizard.",
-  "avatar": "QmS1jxABk44ZQUgpx5jkGkdBFa1i4D1JYf58rffrq9a7mx",
-  "type": "",
+  "avatar": "/ipfs/QmSbBcYKsEjUTD2UBSyxqjBB8YA2XQ2R1MQpkqki3doj7d",
+  "type": "service",
   "image": {
     "volumes": [
       "zt-data:/zt-data",
       "polkadot-data:/polkadot-data"
     ],
     "ports": [
-      "30333:30333",
-      "9933:9933",
-      "9944:9944",
-      "3000:3000",
-      "82:82",
-      "81:81"
+      "30633:30633"
     ],
     "restart": "always",
-    "privileged": "true",
-    "path": "polkadotcustom.avado.dnp.dappnode.eth_0.0.4.tar.xz",
-    "hash": "/ipfs/QmZgEZBwvinTvGnW7XM1WZTBkM1yv2sRVVrU9xucCHpLED",
-    "size": 107140191,
+    "privileged": true,
+    "path": "polkadotcustom.avado.dnp.dappnode.eth_0.0.5.tar.xz",
+    "hash": "/ipfs/QmfQbGqCyFnejhdFzjcurzwfXosZcVc6Em5WYPBFnTWtiB",
+    "size": 116329212,
     "environment": [
       "POLKADOT_EXTRA_OPTS="
     ]
   },
-  "author": "avado r&d",
-  "license": "",
+  "author": "AVADO",
+  "license": "(c)",
   "links": {
     "OnboardingWizard": "http://my.polkadotcustom.avado.dnp.dappnode.eth:81"
   }

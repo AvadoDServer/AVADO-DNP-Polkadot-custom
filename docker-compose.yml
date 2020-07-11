@@ -1,22 +1,21 @@
 version: '3.4'
-
 services:
   polkadotcustom.avado.dnp.dappnode.eth:
-    container_name: "polkadotcustom.avado.dnp.dappnode.eth"
-    image: "polkadotcustom.avado.dnp.dappnode.eth:0.0.4"
+    container_name: polkadotcustom.avado.dnp.dappnode.eth
+    image: 'polkadotcustom.avado.dnp.dappnode.eth:0.0.5'
     build: ./build
     network_mode: host
-    privileged: true   
+    privileged: true
     ports:
-      - '30333:30333'
-      - '9933:9933' 
-      - '9944:9944' 
-      - '3000:3000' 
-      - '82:82' 
-      - '81:81' 
+      - '30633:30633'
+      - '9933:9933'
+      - '9944:9944'
+      - '3000:3000'
+      - '82:82'
+      - '81:81'
     volumes:
-       - "polkadot-data:/polkadot-data"
-       - "zt-data:/zt-data"
+      - 'polkadot-data:/polkadot-data'
+      - 'zt-data:/zt-data'
     restart: always
 volumes:
   polkadot-data: {}
