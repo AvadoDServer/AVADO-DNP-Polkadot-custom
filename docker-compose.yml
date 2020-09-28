@@ -2,7 +2,7 @@ version: '3.4'
 services:
   polkadotcustom.avado.dnp.dappnode.eth:
     container_name: polkadotcustom.avado.dnp.dappnode.eth
-    image: 'polkadotcustom.avado.dnp.dappnode.eth:0.0.5'
+    image: 'polkadotcustom.avado.dnp.dappnode.eth:0.0.11'
     build: ./build
     network_mode: host
     privileged: true

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 ls -lR /dev/net/tun
 
 echo "Starting supervisord"
@@ -10,7 +9,6 @@ FILE=/zt-data/authtoken.secret
 while [ ! -f $FILE ]
 do
     echo "waiting for zeroTier to start up ($FILE)"
- 
     sleep 2
 done
 

@@ -8,17 +8,25 @@ import ServiceToggle from "../../../components/ServiceToggle";
 import { confirmAlert } from 'react-confirm-alert'; // Import
 
 const monitorAPI = process.env["ENDPOINT"] || "http://my.polkadotcustom.avado.dnp.dappnode.eth:82";
-//const monitorAPI = "http://localhost:82";
-
 
 const Comp = () => {
     const [showSpinner, setShowSpinner] = React.useState(true);
-    const [appState, setAppState] = React.useState();
+    // const [appState, setAppState] = React.useState();
     const [networkId, setNetworkId] = React.useState();
     const [currentConfig, setCurrentConfig] = React.useState(undefined);
+    const [polkadotCmd, setPolkadotCmd] = React.useState();
+    const [status, setStatus] = React.useState();
+    const [error, setError] = React.useState();
 
     React.useEffect(() => {
-        getStatus().then(() => { setShowSpinner(false) });
+        console.log("client startup");
+        getStatus().then(() => {
+            console.log("client startup complete");
+            setShowSpinner(false)
+        }).catch((e) => {
+            console.log(e);
+            setError(e.message);
+        });
     }, []);
 
     const waitUntilTrue = (conditionPromise, args) => {
@@ -42,15 +50,24 @@ const Comp = () => {
     const getStatus = () => {
         const p = () => {
             return new Promise((resolve, reject) => {
-                console.log("Polling status from container");
+                console.log("Polling network status from local container");
                 axios.get(`${monitorAPI}/network/status`, { timeout: 5000 })
                     .then((res) => {
                         if (res && res.data) {
+                            console.log("network status retrieved - getting client status");
                             getClientStatus().then((networks) => {
                                 const currentC = { ...currentConfig, ...res.data, networks: networks };
                                 setCurrentConfig(currentC);
-                                console.log(currentC);
-                                return resolve(true);
+                                console.log("Current config",JSON.stringify(currentC,null,2));
+                                // try getting the polkadot node info from the host
+                                axios.get(`${monitorAPI}/hostnodeinfo`, { timeout: 10000 }).then((nodeinfo) => {
+                                    const peerid = nodeinfo.data.peerid;
+                                    setPolkadotCmd(`/usr/local/bin/polkadot --pruning archive --chain polkadot-dev --validator --unsafe-rpc-external --unsafe-ws-external --rpc-cors all -d /polkadot-data --bob --bootnodes '/ip4/10.191.0.1/tcp/30333/p2p/${peerid}'`)
+                                }).catch((e) => {
+                                    console.log(e.message);
+                                    //return reject(new Error("Cannot query master node (is it running?)"));
+                                })
+                                return resolve();
                             });
                         } else {
                             reject(new Error("No result from container"));
@@ -67,7 +84,7 @@ const Comp = () => {
     const getClientStatus = () => {
         const p = () => {
             return new Promise((resolve, reject) => {
-                console.log("Polling client status from container");
+                console.log("Polling client status from local container");
                 axios.get(`${monitorAPI}/network/membership`, { timeout: 5000 })
                     .then((res) => {
                         if (res && res.data) {
@@ -197,6 +214,23 @@ const Comp = () => {
         );
     }
 
+    if (error) {
+        return (
+            <section className="is-medium has-text-white">
+                <div className="">
+                    <div className="container">
+                        <div className="columns is-mobile">
+                            <div className="column is-8-desktop is-10 is-offset-1  has-text-centered">
+                                <p className="is-size-5 has-text-weight-bold">An error occured</p>
+                                <p>{error}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     const networks = currentConfig.networks && currentConfig.networks.map((network) => {
         const ips = network.assignedAddresses.reduce((accum, address) => { return `${accum} ${address.split('/')[0]}` }, "");
         return (
@@ -230,7 +264,8 @@ const Comp = () => {
 
                 <section className="is-medium has-text-white">
                     <p>This node's ID is <b>{currentConfig.status ? JSON.stringify(currentConfig.status.address) : "--"}</b></p>
-                    <p>Please add it to the network and then join the network by entering the network ID below..</p>
+                    <br /><br />
+                    <p>Please add this <b>node ID</b> to the network on the Network Owner node (Add New + press "add member") and when that is done - join the network by entering the network owner's <b>Network ID</b> below and press <b>join</b></p>
                 </section>
                 <br /><br />
 
@@ -289,11 +324,16 @@ const Comp = () => {
             <br />
 
             <section className="is-medium has-text-white">
-                <div>Now that you are connected to the network - you can start your Polkadot node.
-                    Paste the start command here from your server config
-                </div>
+                {(status !== "RUNNING") && (
+                    <div>Now that you are connected to the network - you can start your Polkadot node.
+                    </div>
+                )}
                 {/* <button onClick={() => { toggleService("start", "polkadot") }} className="button is-primary">Start Polkadot node</button> */}
-                <ServiceToggle description="Polkadot node" name="testservice" />
+                <ServiceToggle onStatusChange={setStatus} description="Polkadot node" command={polkadotCmd} name="testservice" />
+                <br /><br />
+                {(status === "RUNNING") && (
+                    <a target="_blank" href="http://my.avado/#/Packages/polkadotcustom.avado.dnp.dappnode.eth/detail">Open node logs</a>
+                )}
             </section>
         </>
     )

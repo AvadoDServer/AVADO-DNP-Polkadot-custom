@@ -14,7 +14,7 @@ COMMAND=`cat /zt-data/database.json | jq -r .command`
 echo COMMAND=---$COMMAND---
 
 ifconfig
-ping -c 10 -W 2 10.191.0.1
+ping -c 2 -W 2 10.191.0.1
 
 eval $COMMAND
 

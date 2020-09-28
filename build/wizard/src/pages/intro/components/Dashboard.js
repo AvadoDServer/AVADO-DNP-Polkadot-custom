@@ -33,7 +33,7 @@ const Comp = () => {
     const [nodeIdentity, setNodeIdentity] = React.useState();
     const [nodeStatus, setNodeStatus] = React.useState();
 
-    const base_cmd = "/usr/local/bin/polkadot --chain=local --validator --rpc-external --ws-external --rpc-cors all -d /polkadot-data";
+    const base_cmd = "/usr/local/bin/polkadot --pruning archive --chain polkadot-dev --validator --unsafe-rpc-external --unsafe-ws-external --rpc-cors all -d /polkadot-data";
     const def_cmd = base_cmd + " --alice";
     const client_cmd = base_cmd + " --bob";
 
@@ -52,28 +52,35 @@ const Comp = () => {
 
     // setCommand(def_cmd);
 
-    // try to parse the nodeID out of logfile of Polkadot
-    const getnodeid = () => {
-        axios.get(`${monitorAPI}/supervisord/readstdoutlogs/testservice/0/10000`, { timeout: 5000 })
-            .then((res) => {
-                if (res && res.data) {
-                    const lines = res.data.split("\n");
-                    let idline;
-                    lines.forEach((line) => {
-                        if (line.indexOf("node identity is") > 0) {
-                            console.log(line);
-                            const parts = line.split(":");
-                            idline = (parts[parts.length - 1]).trim();
-                        }
-                    })
-                    console.log("IDLINE=", idline);
-                    if (idline) {
-                        console.log("setting idline", idline);
-                        setNodeIdentity(idline);
-                    }
-                }
-            });
+
+    const getnodeid  =  () =>  {
+        axios.get(`${monitorAPI}/nodeinfo`).then((res)=>{
+            setNodeIdentity(res.data.peerid);
+        })
     }
+
+    // // try to parse the nodeID out of logfile of Polkadot
+    // const getnodeid = () => {
+    //     axios.get(`${monitorAPI}/supervisord/readstdoutlogs/testservice/0/10000`, { timeout: 5000 })
+    //         .then((res) => {
+    //             if (res && res.data) {
+    //                 const lines = res.data.split("\n");
+    //                 let idline;
+    //                 lines.forEach((line) => {
+    //                     if (line.indexOf("node identity is") > 0) {
+    //                         console.log(line);
+    //                         const parts = line.split(":");
+    //                         idline = (parts[parts.length - 1]).trim();
+    //                     }
+    //                 })
+    //                 console.log("IDLINE=", idline);
+    //                 if (idline) {
+    //                     console.log("setting idline", idline);
+    //                     setNodeIdentity(idline);
+    //                 }
+    //             }
+    //         });
+    // }
 
     React.useEffect(() => {
         if (currentConfig && currentConfig.mode) {
@@ -85,6 +92,10 @@ const Comp = () => {
                 case "client":
                     setAppState("client");
                     break;
+                case "standalone":
+                    setAppState("standalone");
+                    break;
+
                 case "init":
                 default:
                     setAppState("init");
@@ -123,20 +134,8 @@ const Comp = () => {
                             if (res.data.networkid && res.data.mode === "server") {
                                 axios.get(`${monitorAPI}/network/overview`, { timeout: 5000 })
                                     .then((memberres) => {
-                                        // debugger;
                                         setCurrentConfig({ ...currentConfig, ...res.data, members: memberres.data });
-                                        // if (!memberres || !memberres.data || memberres.data.length === 0) {
                                         return resolve(true);
-                                        // }
-                                        // debugger;
-                                        // Promise.all(Object.keys(memberres.data).map(async (member) => {
-                                        //     console.log("member=", member)
-
-                                        //     return await getMemberInfo(member.id)
-                                        // })).then((memberInfo_) => {
-                                        //  setMemberInfo(memberres.data);
-                                        //  return resolve(true);
-                                        // })
                                     });
                             } else {
                                 setCurrentConfig(res.data);
@@ -150,17 +149,6 @@ const Comp = () => {
         };
         return waitUntilTrue(p);
     };
-
-    // const getMemberInfo = (memberid) => {
-    //     return new Promise((resolve, reject) => {
-    //         axios.get(`${monitorAPI}/network/memberinfo/${memberid}`, { timeout: 5000 })
-    //             .then((res) => {
-    //                 return resolve(res.data);
-    //             }).catch((e) => {
-    //                 return reject();
-    //             });
-    //     });
-    // }
 
     const createNetwork = () => {
         axios.get(`${monitorAPI}/createnetwork`).then((res) => {
@@ -298,7 +286,7 @@ const Comp = () => {
 
     if (appState === "init") {
         return (
-            <>
+            <div class="dashboard">
                 <section className="is-medium has-text-white">
                     <div className="container">
                         {/* <div className="container"> */}
@@ -308,13 +296,71 @@ const Comp = () => {
                                 <div className="setting">
                                     <h3 className="title is-3 has-text-white">Let's get started</h3>
                                 </div>
-                                <p>Do you want to create a new network - or join an existing network?</p>
+                                <p>How do you want to run Polkadot?</p>
+
+                                <br /><br />
+
+                                <div class="tile is-ancestor">
+                                    <div class="tile">
+                                        <div class="card">
+                                            <div class="card-content">
+                                                <h3 className="title is-3 has-text-white">Standalone node</h3>
+                                                <p>Choose this to spin up a standalone node you can use for development purposes.</p>
+                                            </div>
+                                            <footer class="card-footer">
+                                                <p class="card-footer-item">
+                                                    <div className="control">
+                                                        <Link
+                                                            className="button is-medium is-success"
+                                                            to={{
+                                                                pathname: "/standalone"
+                                                            }}
+                                                        >Start a standalone node</Link>
+                                                    </div>
+
+                                                </p>
+                                            </footer>
+                                        </div>
+                                    </div>
+                                    <div class="tile">
+                                        <div class="card">
+                                            <div class="card-content">                                            <h3 className="title is-3 has-text-white">Consortium of nodes</h3>
+                                                <p>Choose this if you want to create a private P2P encrypted network with 2 or more polkadot nodes.</p>
+                                                <p>Do you want to create a new network - or join an existing network?</p>
+                                            </div>
+                                            <footer class="card-footer">
+                                                <p class="card-footer-item">
+
+                                                    <div className="control">
+                                                        <button onClick={() => { createNetwork(); }} className="button is-medium is-success">Create a new network</button>
+                                                    </div>
+                                                </p>
+
+                                                <p class="card-footer-item">
+                                                    <div className="control">
+                                                        <Link
+                                                            className="button is-medium is-success"
+                                                            to={{
+                                                                pathname: "/client"
+                                                            }}
+                                                        >Join an existing network</Link>
+                                                    </div>
+                                                </p>
+                                            </footer>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
+
+
                         </div>
                     </div>
+
                 </section>
-                <br /><br />
-                <section className="is-medium has-text-white">
+
+
+                {/* <section className="is-medium has-text-white">
                     <div className="container">
                         <div className="field is-grouped">
                             <div className="control">
@@ -330,8 +376,8 @@ const Comp = () => {
                             </div>
                         </div>
                     </div>
-                </section>
-            </>
+                </section> */}
+            </div >
 
         );
     }
@@ -343,7 +389,7 @@ const Comp = () => {
         }
         const age = Date.now() - parseInt(member.lastping);
 
-        return (<>{Date.now()}<br/>{member.lastping}<br/>{age}</>);
+        return (<>{Date.now()}<br />{member.lastping}<br />{age}</>);
     }
 
     if (appState === "server") {
@@ -383,10 +429,10 @@ const Comp = () => {
                                     <div className="panel-block has-text-centered has-text-white">
                                         Network owner
                             </div>
-                                    <div className="panel-block has-text-centered has-text-white">
+                                    {/* <div className="panel-block has-text-centered has-text-white">
 
                                         {renderLastSeen(member)}
-                                    </div>
+                                    </div> */}
                                 </div>
                             </span>
                         );
@@ -396,11 +442,6 @@ const Comp = () => {
         const nodes = currentConfig.members ? (<div className="memberboxparent">{currentConfig.members
             .filter((member) => { return currentConfig && currentConfig.status && (member.address !== currentConfig.status.address) })
             .map((member, i) => {
-                // debugger;
-                // let member;
-                // if (memberInfo) {
-                //     member = memberInfo.find((member) => { return member.address === memberKey });
-                // }
                 return (
                     <span className="memberbox" key={i}>
                         <div className="panel">
@@ -471,7 +512,7 @@ const Comp = () => {
                                                         <div className="control">
                                                             <input className="input" type="text" placeholder="ID of new member" value={addmemberid} onChange={(e) => { setAddmemberid(e.target.value) }} />
                                                         </div>
-                                                        <br/>
+                                                        <br />
 
                                                         <div className="control has-text-centered">
                                                             <a onClick={() => { addmember(addmemberid); }} className="button is-success">add member</a>
@@ -491,8 +532,6 @@ const Comp = () => {
                 <section className="section has-text-white">
                     <h3 className="title is-3 has-text-white">Polkadot node</h3>
                     <ServiceToggle description="Polkadot node" name="testservice" onToggle={getnodeid} onStatusChange={setNodeStatus} command={def_cmd} />
-                    {/* {nodeIdentity && ( */}
-
 
                     <div>
                         <ul>
@@ -503,10 +542,14 @@ const Comp = () => {
                         </ul>
                     </div>
 
-                    <p>Command for clients</p>
-                    <pre>{client_cmd} --bootnodes '/ip4/{serverip}/tcp/30333/p2p/{nodeIdentity}'</pre>
+                    {(nodeStatus === "RUNNING") && (
+                    <a target="_blank" href="http://my.avado/#/Packages/polkadotcustom.avado.dnp.dappnode.eth/detail">Open node logs</a>
+                )}
 
-                    {/* )} */}
+
+                    {/* <p>Command for clients</p>
+                    <pre>{client_cmd} --bootnodes '/ip4/{serverip}/tcp/30333/p2p/{nodeIdentity}'</pre> */}
+
                 </section>
 
 
@@ -522,6 +565,13 @@ const Comp = () => {
         );
     }
 
+    if (appState === "standalone") {
+        return (
+            <>
+                <Redirect to="/standalone" />
+            </>
+        );
+    }
     return null;
 };
 

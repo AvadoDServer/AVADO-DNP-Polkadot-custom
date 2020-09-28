@@ -11,6 +11,7 @@ const Comp = ({ name, description, onToggle, onStatusChange, command }) => {
     // const [serviceName, setServiceName] = React.useState();
     const [stateName, setStateName] = React.useState("UNKNOWN");
     const [pollStateCount, setPollStateCount] = React.useState(0);
+    const [disabled, setDisabled] = React.useState(false);
 
     const [serviceCommand, setServiceCommand] = React.useState();
     const [showCmdDetail, setShowCmdDetail] = React.useState(true);
@@ -23,11 +24,13 @@ const Comp = ({ name, description, onToggle, onStatusChange, command }) => {
 
     React.useEffect(() => {
         // setServiceName(name);
+        // debugger;
         setServiceCommand(command);
+        setCommand(command);
         if (command) {
             setShowCmdDetail(false);
         }
-    }, [command]);
+    }, []);
 
     React.useEffect(() => {
         if (pollStateCount > 0) {
@@ -49,12 +52,15 @@ const Comp = ({ name, description, onToggle, onStatusChange, command }) => {
             });
     }
 
-
-
     const getStatus = () => {
         axios.get(`${monitorAPI}/supervisord/status/${name}`).then((res) => {
             if (res && res.data) {
                 if (res.data.name === name) {
+                    // if status changed - re-em
+                    if (stateName !== res.data.statename) {
+                        setDisabled(false);
+                    }
+
                     setStateName(res.data.statename)
                     onStatusChange && onStatusChange(res.data.statename);
                 } else {
@@ -64,8 +70,8 @@ const Comp = ({ name, description, onToggle, onStatusChange, command }) => {
         });
     };
 
-
     const startService = () => {
+        setDisabled(true);
         axios.get(`${monitorAPI}/supervisord/start/${name}`).then((res) => {
             setPollStateCount(5);
             ///
@@ -73,6 +79,7 @@ const Comp = ({ name, description, onToggle, onStatusChange, command }) => {
     };
 
     const stopService = () => {
+        setDisabled(true);
         axios.get(`${monitorAPI}/supervisord/stop/${name}`).then((res) => {
             setPollStateCount(5);
             ///
@@ -86,10 +93,10 @@ const Comp = ({ name, description, onToggle, onStatusChange, command }) => {
                         <>
                             <div onClick={() => {
                                 setShowCmdDetail(!showCmdDetail);
-                            }}>-</div>
+                            }}><small>hide command</small></div>
 
                             <div>
-                                command <input className="input" type="text" name="cmd" value={serviceCommand} onChange={(e) => {
+                                <input className="input" type="text" name="cmd" value={serviceCommand} onChange={(e) => {
                                     setServiceCommand(e.target.value);
                                     setCommand(e.target.value);
 
@@ -100,13 +107,19 @@ const Comp = ({ name, description, onToggle, onStatusChange, command }) => {
                     ) : (
                             <div onClick={() => {
                                 setShowCmdDetail(!showCmdDetail);
-                            }}>+</div>
+                            }}><small>show command</small></div>
                         )}
                     {stateName !== "RUNNING" && (
-                        <a onClick={() => { startService(); }} className="button is-medium is-success">Start {description}</a>
+                        <>
+                            <p>Service is not running</p>
+                            <a disabled={disabled} onClick={() => { startService(); }} className="button is-medium is-success">Start {description}</a>
+                        </>
                     )}
                     {stateName === "RUNNING" && (
-                        <a onClick={() => { stopService(); }} className="button is-medium is-success">Stop {description}</a>
+                        <>
+                            <p>Service is running</p>
+                            <a disabled={disabled} onClick={() => { stopService(); }} className="button is-medium is-success">Stop {description}</a>
+                        </>
                     )}
                 </section>
             </>
