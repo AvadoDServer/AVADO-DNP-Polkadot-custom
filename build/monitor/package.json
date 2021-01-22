@@ -11,7 +11,7 @@
   "dependencies": {
     "@polkadot/api": "^1.25.1",
     "assert": "^2.0.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "chokidar": "^3.0.2",
     "express": "^4.17.1",
     "nanorequest": "^3.0.0",
