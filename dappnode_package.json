@@ -1,6 +1,7 @@
 {
   "name": "polkadotcustom.avado.dnp.dappnode.eth",
-  "version": "0.0.11",
+  "version": "0.0.12",
+  "title": "Polkadot Node",
   "description": "Polkadot Custom Network - Set up a custom Polkadot 2, 3 or more node consensus network easy using the integrated wizard.",
   "avatar": "/ipfs/QmSbBcYKsEjUTD2UBSyxqjBB8YA2XQ2R1MQpkqki3doj7d",
   "type": "service",
@@ -14,9 +15,9 @@
     ],
     "restart": "always",
     "privileged": true,
-    "path": "polkadotcustom.avado.dnp.dappnode.eth_0.0.11.tar.xz",
-    "hash": "/ipfs/QmRFuXDMaDbozsWQmoosrjm9ZT5dB1FeJat8o7Coc7oaoU",
-    "size": 89285384,
+    "path": "polkadotcustom.avado.dnp.dappnode.eth_0.0.12.tar.xz",
+    "hash": "/ipfs/QmNb1wdtZZUd58ScR6HmG7cpJfZsPJRWDzpE7E2HrD5CMC",
+    "size": 90630348,
     "environment": [
       "POLKADOT_EXTRA_OPTS="
     ]
