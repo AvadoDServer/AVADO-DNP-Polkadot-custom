@@ -19,7 +19,7 @@
     "request": "^2.88.0",
     "restify": "^8.4.0",
     "restify-cors-middleware": "^1.1.1",
-    "shelljs": "^0.8.3",
+    "shelljs": "^0.8.5",
     "simple-json-db": "^1.2.1",
     "supervisord": "^0.1.0",
     "zerotier-service": "^0.3.1"
